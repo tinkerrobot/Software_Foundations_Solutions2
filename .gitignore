@@ -2,3 +2,6 @@
 *.glob
 *.v.d
 *.html
+*.tar
+*.zip
+*.aux
