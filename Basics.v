@@ -1108,7 +1108,7 @@ Fixpoint plus' (n : nat) (m : nat) : nat :=
     "decreasing analysis" is not very sophisticated, it is sometimes
     necessary to write functions in slightly unnatural ways. *)
 
-(** **** Exercise: 2 stars, optional (decreasing) ??? I don't know what I have to do.@@@@ *)
+(** **** Exercise: 2 stars, optional (decreasing) *)
 (** To get a concrete sense of this, find a way to write a sensible
     [Fixpoint] definition (of a simple function on numbers, say) that
     _does_ terminate on all inputs, but that Coq will reject because
@@ -1199,7 +1199,8 @@ Print nat.
         incrementing a binary number and then converting it to unary
         should yield the same result as first converting it to unary and
         then incrementing.
-*)
+ *)
+
 Inductive bin : Type :=
  | EOB : bin
  | N : bin -> bin
@@ -1221,7 +1222,6 @@ Fixpoint bin_to_nat (b : bin) : nat :=
 
 Example test_bin_incr1 :=
   bin_to_nat(incr (E (E (E (N EOB))))).
-Compute bin_to_nat(N (N (E (E (E (N EOB)))))).
 
 (** $Date: 2016-07-13 12:41:41 -0400 (Wed, 13 Jul 2016) $ *)
 

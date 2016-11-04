@@ -18,16 +18,6 @@ Require Export Tactics.
     the type of _propositions_.  We can see this with the [Check]
     command: *)
 
-(* 
-Lecture: all propositions are sets but some sets aren't proposition. Prop은 Type에 포함된다.
-Prop : The set of all propositions
-Type : the set of all sets
-예를 들어 nat : Type 이지만 nat : Prop 이 아니다.
-match는 0 <> 1을 증명하는데 사용되는데 Prop에는 적용이 되지 않아서 Prop 사이에 다른 것을 증명할 수 없다. Prop에 대해서 match를 쓸 수 없는데 Type에 대해서는 쓸수 있다.
-
-A -> B : Type or Prop
-B가 Prop이면 A -> B가 Prop이 된다.(?)
- *)
 Check nat -> 3 = 3 : Prop.
 
 Check 3 = 3.
@@ -57,16 +47,6 @@ Check forall n : nat, n = 2.
 
 Check 3 = 4.
 (* ===> Prop *)
-
-(* lecture *)
-(* exists x: A, P(x) := ex A (fun x => e) *)
-
-(* exists n: nat, n*n = 2*n := ex nat (fun n => n*n = 2*n) *)
-                                             
-
-(* Inductive ex (A : Type) (P : A -> Prop) : Prop := *)
-(* | ex_intro : forall x : A, P x -> ex A P *)
-                                      
 
 (** Indeed, propositions don't just have types: they are _first-class
     objects_ that can be manipulated in the same ways as the other
@@ -445,8 +425,6 @@ Lemma foo': ~ 3 = 4.
   inversion H.
 Qed.
 
-(* What is inversion?? *)
-
 (** The Latin _ex falso quodlibet_ means, literally, "from falsehood
     follows whatever you like"; this is another common name for the
     principle of explosion. *)
@@ -767,11 +745,6 @@ Proof.
   simpl. simpl in Hx.
   apply Hx.
 Qed.
-
-(* Proof. *)
-(*   intros n [m Hm]. *)
-(*   exists (2 + m). *)
-(*   auto.  Qed. *)
 
 (** **** Exercise: 1 star (dist_not_exists)  *)
 (** Prove that "[P] holds for all [x]" implies "there is no [x] for

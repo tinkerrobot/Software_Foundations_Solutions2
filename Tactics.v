@@ -435,15 +435,6 @@ Proof.
   apply double_injective in H.
   apply H.
 Qed.
-  (* - intros m H. simpl in H. destruct m. *)
-  (*   + reflexivity. *)
-  (*   + inversion H. *)
-  (* - intros m H. simpl in H. destruct m. *)
-  (*   + inversion H. *)
-  (*   + symmetry in H. rewrite <- plus_n_Sm in H. apply S_injective in H. *)
-  (*     rewrite <- plus_n_Sm in H. rewrite -> plus_comm in H. rewrite <- plus_n_Sm in H. *)
-  (*     apply S_injective in H. symmetry in H. apply IHn' in H. rewrite H. reflexivity. *)
-
 
       (* ################################################################# *)
 (** * Varying the Induction Hypothesis *)
@@ -751,7 +742,6 @@ Proof.
   generalize dependent l2. generalize dependent x. generalize dependent n.
   induction l1 as [|h1 l1'].
   - simpl. intros n x l2 H. apply H.
-    (* - simpl. intros n x. induction n. *)
   - simpl. intros n x l2 H. induction n as [| n'].
     + inversion H.
     + apply S_injective in H. apply IHl1' in H. apply f_equal. apply H.
@@ -1123,9 +1113,14 @@ Qed.
 Theorem beq_nat_sym : forall (n m : nat),
   beq_nat n m = beq_nat m n.
 Proof.
-
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros n m. generalize dependent m. induction n as [| n'].
+  - simpl. induction m as [| m'].
+    + reflexivity.
+    + reflexivity.
+  - simpl. induction m as [| m'].
+    + reflexivity.
+    + apply IHn'.
+Qed.
 
 (** **** Exercise: 3 stars, advanced, optional (beq_nat_sym_informal)  *)
 (** Give an informal proof of this lemma that corresponds to your
@@ -1136,16 +1131,40 @@ Proof.
    Proof:
    (* FILL IN HERE *)
 []
-*)
+ *)
+
 
 (** **** Exercise: 3 stars, optional (beq_nat_trans)  *)
+
+Theorem beq_nat_succ : forall n m,
+    beq_nat (S n) (S m) = true <->
+    beq_nat n m = true.
+Proof.
+  intros n m. generalize dependent m. induction n as [| n'].
+  - induction m as [| m'].
+    + simpl. split. auto. auto.
+    + simpl. split. auto. auto.      
+  - induction m as [| m'].
+    + simpl. split. auto. auto.
+    + simpl. split. auto. auto.
+Qed.
+
 Theorem beq_nat_trans : forall n m p,
   beq_nat n m = true ->
   beq_nat m p = true ->
   beq_nat n p = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros n m p. generalize dependent p. generalize dependent m. induction n as [| n'].
+  - (* n' = 0 *) induction m as [| m'].
+    + (* m' = 0 *) auto.
+    + (* m' > 0 *) intros p H0 H1. inversion H0.
+  - (* n' > 0 *) induction m as [| m'].
+    + (* m' = 0 *) intros p H0 H1. inversion H0.
+    + (* m' > 0 *) intros p H0 H1. induction p as [| p'].
+      (* p' = 0 *) { auto. }
+      (* p' > 0 *) { apply beq_nat_succ. apply -> beq_nat_succ in H0. apply -> beq_nat_succ in H1.
+                     apply IHn' with m'. apply H0. apply H1. }
+Qed.
 
 (** **** Exercise: 3 stars, advanced (split_combine)  *)
 (** We proved, in an exercise above, that for all lists of pairs,

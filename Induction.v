@@ -266,7 +266,7 @@ Proof.
 (* ################################################################# *)
 (** * More Exercises *)
 
-(** **** Exercise: 3 stars, recommended (mult_comm)  this proble was difficult!!!!!! TODO: solve it again!!!*)
+(** **** Exercise: 3 stars, recommended (mult_comm) *)
 (** Use [assert] to help prove this theorem.  You shouldn't need to
     use induction on [plus_swap]. *)
 
@@ -278,16 +278,12 @@ Proof.
   assert (H: n + m = m + n). { rewrite -> plus_comm. reflexivity. } rewrite -> H.
   rewrite -> plus_assoc. reflexivity.
 Qed.
-(**
-  intros n m p. induction n as [|n' IHn'].
-  - reflexivity.
-  - simpl. rewrite -> IHn'. rewrite -> plus_n_Sm. reflexivity.
-**)
+
 (** Now prove commutativity of multiplication.  (You will probably
     need to define and prove a separate subsidiary theorem to be used
     in the proof of this one.  You may find that [plus_swap] comes in
     handy.) *)
-(** difficult!!!@@@@@@@@@@@@@@@@@@@ I saw the solution.... T.T...**)
+
 Lemma mult_n_Sm : forall m n : nat,
     n * (S m) = n + n * m.
 Proof.
@@ -303,13 +299,6 @@ Proof.
   - rewrite -> mult_0_r. reflexivity.
   - rewrite -> mult_n_Sm. simpl. rewrite -> IHm. reflexivity.
 Qed. 
-      (** Proof.
-  intros m n. induction m as [| m' IHm'].
-  - rewrite -> mult_0_r. reflexivity.
-  - simpl. rewrite -> IHm'. induction n as [| n' IHn'].
-    + reflexivity.
-    + simpl. rewrite <- IHn'. rewrite -> plus_swap. reflexivity.
-Qed. **)
       
 (** Take a piece of paper.  For each of the following theorems, first
     _think_ about whether (a) it can be proved using only
@@ -454,7 +443,8 @@ Proof.
  intros b. induction b.
  - reflexivity.
  - simpl. rewrite <- plus_n_O. reflexivity.
- - simpl. rewrite -> IHb. rewrite <- plus_n_O. rewrite <- plus_n_O. rewrite -> plus_n_Sm. simpl. reflexivity. Qed.
+ - simpl. rewrite -> IHb. rewrite <- plus_n_O. rewrite <- plus_n_O.
+   rewrite -> plus_n_Sm. simpl. reflexivity. Qed.
     
 (** **** Exercise: 5 stars, advanced (binary_inverse)  *)
 (** This exercise is a continuation of the previous exercise about
@@ -464,7 +454,7 @@ Proof.
     (a) First, write a function to convert natural numbers to binary
         numbers.  Then prove that starting with any natural number,
         converting to binary, then converting back yields the same
-        natural number you started with. ---- very difficult..T_T
+        natural number you started with.
 
     (b) You might naturally think that we should also prove the
         opposite direction: that starting with a binary number,
