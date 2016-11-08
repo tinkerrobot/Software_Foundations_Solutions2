@@ -571,9 +571,13 @@ Inductive next_even : nat -> nat -> Prop :=
     we are going to need later in the course.  The proofs make good
     practice exercises. *)
 
-Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
+Lemma le_trans : forall m n o,
+  m <= n -> n <= o -> m <= o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros m n o Hmn Hno. induction Hno as [|n' o'].
+  - apply Hmn.
+  - apply le_S. apply IHo'.
+Qed.
 
 Theorem O_le_n : forall n,
   0 <= n.
@@ -583,24 +587,50 @@ Proof.
 Theorem n_le_m__Sn_le_Sm : forall n m,
   n <= m -> S n <= S m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m H. induction H. apply le_n. apply le_S. apply IHle.
+Qed.
 
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m H. inversion H.
+  - auto.
+  - apply le_trans with (m:=n) (n:=S n) (o:=m). apply le_S.
+    { apply le_n. }
+    { apply H1. }
+Qed.
 
 Theorem le_plus_l : forall a b,
   a <= a + b.
 Proof.
   (* FILL IN HERE *) Admitted.
 
+Lemma plus_Sn_m : forall n m,
+    S n + m = S (n + m).
+Proof.
+  intros n m. reflexivity.
+Qed.
+
 Theorem plus_lt : forall n1 n2 m,
   n1 + n2 < m ->
   n1 < m /\ n2 < m.
 Proof.
- unfold lt.
- (* FILL IN HERE *) Admitted.
+  unfold lt.
+  intros n1 n2 m H. 
+  split.
+  - induction H.
+   + apply n_le_m__Sn_le_Sm. induction n1.
+     { simpl. induction n2.
+       - auto.
+       - apply le_S. apply IHn2. }
+     { rewrite plus_Sn_m. apply n_le_m__Sn_le_Sm. apply IHn1. }
+   + apply le_S. apply IHle.
+  - induction H.
+    + apply n_le_m__Sn_le_Sm. induction n1.
+      { simpl. apply le_n. }
+      { rewrite plus_Sn_m. apply le_S. apply IHn1. }
+    + apply le_S. apply IHle.
+Qed.
 
 Theorem lt_S : forall n m,
   n < m ->
@@ -715,9 +745,81 @@ End R.
       transitive -- that is, if [l1] is a subsequence of [l2] and [l2]
       is a subsequence of [l3], then [l1] is a subsequence of [l3].
       Hint: choose your induction carefully! *)
+Notation "x :: l" := (cons x l) (at level 60, right associativity).
+Notation "[ ]" := nil.
+Notation "[ x ; .. ; y ]" := (cons x .. (cons y nil) ..).
+Notation "x ++ y" := (app x y).
 
-(* FILL IN HERE *)
-(** [] *)
+Inductive subseq {X: Type}: list X -> list X -> Prop :=
+| empty l : subseq [] l
+| removeone x l1 l2 : subseq l1 l2 -> subseq l1 (x :: l2)
+| removetwo x l1 l2 : subseq l1 l2 -> subseq (x :: l1) (x :: l2). 
+
+Example subseq_ex1: subseq [1;2;3] [1;2;3].
+Proof.
+  repeat apply removetwo. apply empty.
+Qed.
+
+Example subseq_ex2: subseq [1;2;3] [1;1;1;2;2;3].
+Proof.
+  apply removeone. apply removeone. repeat apply removetwo. apply removeone. apply removetwo. apply empty.
+Qed.
+
+Example subseq_ex3: subseq [1;2;3] [1;2;7;3].
+Proof.
+  repeat apply removetwo. apply removeone. apply removetwo. apply empty.
+Qed.
+
+Example subseq_ex4: subseq [1;2;3] [5;6;1;9;9;2;7;3;8].
+Proof.
+  apply removeone.
+  apply removeone.
+  apply removetwo.
+  apply removeone.
+  apply removeone.
+  apply removetwo.
+  apply removeone.
+  apply removetwo.
+  apply empty.
+Qed.
+
+Example subseq_ex5: ~ subseq [1;2;3] [1;2].
+Proof.
+  intro H; repeat match goal with [H: subseq _ _ |- _] => inversion_clear H end.
+Qed.
+
+Example subseq_ex6: ~ subseq [1;2;3] [1;3].
+Proof.
+  intro H; repeat match goal with [H: subseq _ _ |- _] => inversion_clear H end.
+Qed.
+
+Example subseq_ex7: ~ subseq [1;2;3] [5;6;2;1;7;3;8].
+Proof.
+ intro H; repeat match goal with [H: subseq _ _ |- _] => inversion_clear H end.
+Qed.
+
+Lemma subseq_refl: forall X (l: list X), 
+  subseq l l.
+Proof.
+  intros. induction l.
+  - apply empty.
+  - apply removetwo. apply IHl.
+Qed.
+
+Lemma subseq_app: forall X (l1 l2 l3: list X)
+    (SUB: subseq l1 l2),
+  subseq l1 (l2++l3).
+Proof.
+  intros X l1 l2 l3 SUB.
+  induction SUB.
+  - apply empty.
+  - assert ((x :: l2) ++ l3 = x :: (l2 ++ l3)) as H. { reflexivity. } rewrite H. apply removeone. apply IHSUB.
+  - assert ((x :: l2) ++ l3 = x :: (l2 ++ l3)) as H. { reflexivity. } rewrite H. apply removetwo. apply IHSUB.   
+Qed.
+                                                 
+Lemma subseq_trans : forall X (l1 l2 l3: list X),
+    subseq l1 l2 -> subseq l2 l3 -> subseq l1 l3.
+Proof. Admitted.
 
 (** **** Exercise: 2 stars, optional (R_provability)  *)
 (** Suppose we give Coq the following definition:

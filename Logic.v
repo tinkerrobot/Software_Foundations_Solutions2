@@ -1376,13 +1376,6 @@ Qed.
 (** The following theorem is an alternate "negative" formulation of
     [beq_nat_true_iff] that is more convenient in certain
     situations (we'll see examples in later chapters). *)
-  
-(* beq_nat_refl: forall n : nat, true = beq_nat n n *)
-(* beq_nat_0_l: forall n : nat, beq_nat 0 n = true -> n = 0 *)
-(* beq_nat_true: forall n m : nat, beq_nat n m = true -> n = m *)
-(* beq_nat_sym: forall n m : nat, beq_nat n m = beq_nat m n *)
-(* beq_nat_trans: forall n m p : nat, beq_nat n m = true -> beq_nat m p = true -> beq_nat n p = true *)
-(* beq_nat_true_iff: forall n1 n2 : nat, beq_nat n1 n2 = true <-> n1 = n2 *)
 
 Theorem beq_nat_false_iff : forall x y : nat,
   beq_nat x y = false <-> x <> y.
@@ -1423,7 +1416,7 @@ Lemma beq_list_true_iff :
     forall l1 l2, beq_list beq l1 l2 = true <-> l1 = l2.
 Proof.
   intros A beq H l1 l2. split.
-  - (* -> *) generalize dependent l2. generalize dependent l1. intros l1. induction l1 as [| h1 l1' IHl1'].
+  - (* -> *) generalize dependent l2. induction l1 as [| h1 l1' IHl1'].
     + induction l2 as [| h2 l2' IHl2'].
       { reflexivity. }
       { simpl. intros H1. inversion H1. }
@@ -1434,7 +1427,7 @@ Proof.
           assert (l1' = l2' -> h1 :: l1' = h1 :: l2') as H2.
           { intros H3. rewrite H3. reflexivity. } apply H2. apply IHl1'. apply H1.
         + inversion H1. }
-  - (* <- *) generalize dependent l2. generalize dependent l1. intros l1. induction l1 as [| h1 l1' IHl1'].
+  - (* <- *) generalize dependent l2. induction l1 as [| h1 l1' IHl1'].
     + induction l2 as [| h2 l2' IHl2'].
       { simpl. reflexivity. }
       { simpl. intros H1. inversion H1. }
