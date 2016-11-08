@@ -12,6 +12,6 @@ Progress of my travel to coq
 3. Lists: 1 excercise unsolved(bag_theorem)
 4. Poly: 1 excercise unsolved(church_numerals: exp)
 5. Tactics: 3 excercises unsolved(split combine, filter_excercise, forall_exists_challenge)
-6. Logic: in progress...
+6. Logic: 2 excercise unsolved(tr_rev, classical_axioms)
 7. IndProp: in progress...
 8. Map: not yet

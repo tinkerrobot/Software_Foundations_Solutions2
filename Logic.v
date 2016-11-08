@@ -945,8 +945,8 @@ Qed.
     equivalent to [Podd n] when [n] is odd and equivalent to [Peven n]
     otherwise. *)
 
-Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop 
-  (* REPLACE THIS LINE WITH   := _your_definition_ . *) . Admitted.
+Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop :=
+  fun (n : nat) => if oddb n then Podd n else Peven n.
 
 (** To test your definition, prove the following facts: *)
 
@@ -956,7 +956,11 @@ Theorem combine_odd_even_intro :
     (oddb n = false -> Peven n) ->
     combine_odd_even Podd Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros Podd Peven n Hodd Heven.
+  unfold combine_odd_even. destruct (oddb n) eqn: H.
+  - apply Hodd. reflexivity.
+  - apply Heven. reflexivity.
+Qed.
 
 Theorem combine_odd_even_elim_odd :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -964,7 +968,10 @@ Theorem combine_odd_even_elim_odd :
     oddb n = true ->
     Podd n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros Podd Peven n Hcomb Hodd.
+  unfold combine_odd_even in Hcomb.
+  rewrite Hodd in Hcomb. assumption.
+Qed.
 
 Theorem combine_odd_even_elim_even :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -972,8 +979,10 @@ Theorem combine_odd_even_elim_even :
     oddb n = false ->
     Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros Podd Peven n Hcomb Heven.
+  unfold combine_odd_even in Hcomb.
+  rewrite Heven in Hcomb. assumption.
+Qed.
 
 (* ################################################################# *)
 (** * Applying Theorems to Arguments *)
@@ -1456,7 +1465,19 @@ Fixpoint forallb {X : Type} (test : X -> bool) (l : list X) : bool :=
 Theorem forallb_true_iff : forall X test (l : list X),
    forallb test l = true <-> All (fun x => test x = true) l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. split.
+  - (* -> *) intros. induction l.
+    + simpl. auto.
+    + simpl. split.
+      { unfold forallb in H. rewrite andb_true_iff in H. apply proj1 in H. assumption. }
+      { apply IHl. inversion H. rewrite andb_true_iff in H1. destruct H1 as [H2 H3]. rewrite H2.
+        rewrite H3. auto. }
+  - (* <- *) intros. induction l.
+    + reflexivity.
+    + simpl. rewrite andb_true_iff. split.
+      { simpl in H. apply proj1 in H. assumption. }
+      { simpl in H. apply proj2 in H. apply IHl in H. assumption. }
+Qed.
 
 (** Are there any important properties of the function [forallb] which
     are not captured by your specification? *)
@@ -1576,8 +1597,8 @@ Qed.
 Theorem excluded_middle_irrefutable:  forall (P:Prop),
   ~ ~ (P \/ ~ P).
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  unfold not. intros P H. apply H. right. intros. apply H. left. apply H0.
+Qed.
 
 (** **** Exercise: 3 stars, optional (not_exists_dist)  *)
 (** It is a theorem of classical logic that the following two
