@@ -15,11 +15,12 @@ Require Export P01.
 Eval compute in 3 * 5.
 Eval compute in 3+5*6.
 
-Fixpoint factorial (n:nat) : nat := 
-  FILL_IN_HERE.
+Fixpoint factorial (n:nat) : nat :=
+  match n with
+  | O => 1
+  | S n' => n * factorial n' end.
 
 Example test_factorial1:          (factorial 3) = 6.
-exact FILL_IN_HERE. Qed.
+Proof. reflexivity. Qed.
 Example test_factorial2:          (factorial 5) = 10 * 12.
-exact FILL_IN_HERE. Qed.
-(** [] *)
+Proof. reflexivity. Qed.
