@@ -13,5 +13,5 @@ Progress of my travel to coq
 4. Poly: 1 excercise unsolved(church_numerals: exp)
 5. Tactics: 3 excercises unsolved(split combine, filter_excercise, forall_exists_challenge)
 6. Logic: 2 excercise unsolved(tr_rev, classical_axioms)
-7. IndProp: in progress...
-8. Map: not yet
+7. IndProp: I skipped everything related with regualr expressions.
+8. Map: someday...
