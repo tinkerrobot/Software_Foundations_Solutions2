@@ -14,13 +14,13 @@ Require Export P08.
 Lemma in_split : forall (X:Type) (x:X) (l:list X),
   In x l ->
   exists l1 l2, l = l1 ++ x :: l2.
-Proof. intros.
-  induction l as [|h t IH].
-  - simpl in H. destruct H.
-  - simpl in H. inversion H as [HL| HR].
-    + exists [], t. simpl. rewrite HL. reflexivity.
-    + apply IH in HR. inversion HR as [l3 H2]. inversion H2 as[l4 H3].
-      exists (h::l3), l4. rewrite H3. simpl. reflexivity.
+Proof.
+  intros X x l H. induction l as [|x' l' IHl'].
+  - inversion H.
+  - inversion H as [Heq | Hin].
+    + exists [], l'. simpl. rewrite Heq. reflexivity.
+    + apply IHl' in Hin. inversion Hin as [lf Hf]. inversion Hf as [lb Hb].
+      exists (x'::lf), lb. rewrite Hb. reflexivity.
 Qed.
 
 Lemma alc : forall (X:Type) (x:X) (l1 l2 : list X),
@@ -81,19 +81,28 @@ Proof. intros. induction l1.
          apply IHl1 in HR. apply HR.
 Qed.
 
+(*
+Inductive repeats {X:Type} : list X -> Prop :=
+| rp_base: forall x l, In x l -> repeats (x::l)
+| rp_next: forall x l, repeats l -> repeats (x::l)
+.
+ *)
+
 Theorem pigeonhole_principle: forall (X:Type) (l1  l2:list X),
    excluded_middle ->
    (forall x, In x l1 -> In x l2) ->
    length l2 < length l1 ->
    repeats l1.
 Proof.
-   intros X l1. induction l1 as [|x l1' IHl1'].
-   { unfold excluded_middle. intros. inversion H1. }
-   { intros. unfold excluded_middle in H. 
-     destruct H with (P:= In x l1').
-     - apply rp_base in H2. apply H2.
-     - simpl in H0. assert (x = x) as eq. { reflexivity. }
-        apply or_introl with (B:= In x l1') in eq. apply H0 in eq.
+  intros X l1 l2 E H1 H2. unfold excluded_middle in E. generalize dependent l2.
+  induction l1 as [|x l1' IHl1'].
+   - intros. inversion H2.
+   - intros. destruct E with (P:= In x l1').
+     + apply rp_base in H. assumption.
+     + simpl in H1. unfold not in H. apply rp_next. apply IHl1' with l2.
+       { intros x' H'. apply H1. right. assumption. }
+       assert (x = x) as eq. { reflexivity. }
+        apply or_introl with (B:= In x l1') in eq. apply H1 in eq.
         apply in_split in eq.
         inversion eq as [l1 [l3 H3]].
         apply IHl1' with (l2:=l1++l3) in H as H4.
@@ -113,8 +122,28 @@ Proof.
         + inversion H1.
           ++ rewrite H3. rewrite alc. unfold lt. apply le_n.
           ++ unfold lt. rewrite H3 in H5. rewrite alc in H5.
-              apply leSS in H5. apply H5. }
+             apply leSS in H5. apply H5. }
+Qed.
 
+  intros X l1 l2 E H1 H2. unfold excluded_middle in E. generalize dependent l1. induction l2 as [| x2' l2' IHl2'].
+  - intros. induction l1 as [| x1' l1' IHl1'].
+    + inversion H2.
+    + simpl in H1. destruct H1 with x1'. left. reflexivity.
+  - intros. induction l1 as [| x1' l1' IHl1'].
+    + inversion H2.
+    + apply IHl2'.
+      { intros. apply H1 in H. simpl in H. destruct H as [Heq | Hin].
+        -
+      
+      
+    
+  (* intros X l1 l2 E H1 H2. generalize dependent l2. induction l1 as [| x1' l1' IHl1']. *)
+  (* - intros. inversion H2.     *)
+  (* - intros. induction l2 as [| x2' l2' IHl2']. *)
+  (*   + simpl in H1. destruct H1 with x1'. left. reflexivity. *)
+  (*   + apply IHl2'. intros x H. *)
+  (*     { apply H1 in H. simpl in H. destruct H as [Heq | Hin]. *)
+          
 Qed. 
 
 

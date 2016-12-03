@@ -1106,12 +1106,13 @@ Lemma MStar1 :
     s =~ re ->
     s =~ Star re.
 Proof.
-  intros T s re H.
-  rewrite <- (app_nil_r _ s).
-  apply (MStarApp s [] re).
-  - apply H.
-  - apply MStar0.
-Qed.
+    (* FILL IN HERE *) Admitted.
+  (* intros T s re H. *)
+  (* rewrite <- (app_nil_r _ s). *)
+  (* apply (MStarApp s [] re). *)
+  (* - apply H. *)
+  (* - apply MStar0. *)
+(* Qed. *)
 
 (** (Note the use of [app_nil_r] to change the goal of the theorem to
     exactly the same shape expected by [MStarApp].) *)
@@ -1137,11 +1138,11 @@ Proof.
     strings [s1, ..., sn], then [fold app ss []] is the result of
     concatenating them all together. *)
 
-Lemma MStar' : forall T (ss : list (list T)) (re : reg_exp T),
-  (forall s, In s ss -> s =~ re) ->
-  fold app ss [] =~ Star re.
-Proof.
-  (* FILL IN HERE *) Admitted.
+(* Lemma MStar' : forall T (ss : list (list T)) (re : reg_exp T), *)
+(*   (forall s, In s ss -> s =~ re) -> *)
+(*   fold app ss [] =~ Star re. *)
+(* Proof. *)
+  (* (* FILL IN HERE *) Admitted. *)
 (** [] *)
 
 (** **** Exercise: 4 stars (reg_exp_of_list)  *)
@@ -1176,55 +1177,55 @@ Fixpoint re_chars {T} (re : reg_exp T) : list T :=
 
 (** We can then phrase our theorem as follows: *)
 
-Theorem in_re_match : forall T (s : list T) (re : reg_exp T) (x : T),
-  s =~ re ->
-  In x s ->
-  In x (re_chars re).
-Proof.
-  intros T s re x Hmatch Hin.
-  induction Hmatch
-    as [
-        |x'
-        |s1 re1 s2 re2 Hmatch1 IH1 Hmatch2 IH2
-        |s1 re1 re2 Hmatch IH|re1 s2 re2 Hmatch IH
-        |re|s1 s2 re Hmatch1 IH1 Hmatch2 IH2].
-  (* WORKED IN CLASS *)
-  - (* MEmpty *)
-    apply Hin.
-  - (* MChar *)
-    apply Hin.
-  - simpl. rewrite in_app_iff in *.
-    destruct Hin as [Hin | Hin].
-    + (* In x s1 *)
-      left. apply (IH1 Hin).
-    + (* In x s2 *)
-      right. apply (IH2 Hin).
-  - (* MUnionL *)
-    simpl. rewrite in_app_iff.
-    left. apply (IH Hin).
-  - (* MUnionR *)
-    simpl. rewrite in_app_iff.
-    right. apply (IH Hin).
-  - (* MStar0 *)
-    destruct Hin.
+(* Theorem in_re_match : forall T (s : list T) (re : reg_exp T) (x : T), *)
+(*   s =~ re -> *)
+(*   In x s -> *)
+(*   In x (re_chars re). *)
+(* Proof. *)
+(*   intros T s re x Hmatch Hin. *)
+(*   induction Hmatch *)
+(*     as [ *)
+(*         |x' *)
+(*         |s1 re1 s2 re2 Hmatch1 IH1 Hmatch2 IH2 *)
+(*         |s1 re1 re2 Hmatch IH|re1 s2 re2 Hmatch IH *)
+(*         |re|s1 s2 re Hmatch1 IH1 Hmatch2 IH2]. *)
+(*   (* WORKED IN CLASS *) *)
+(*   - (* MEmpty *) *)
+(*     apply Hin. *)
+(*   - (* MChar *) *)
+(*     apply Hin. *)
+(*   - simpl. rewrite in_app_iff in *. *)
+(*     destruct Hin as [Hin | Hin]. *)
+(*     + (* In x s1 *) *)
+(*       left. apply (IH1 Hin). *)
+(*     + (* In x s2 *) *)
+(*       right. apply (IH2 Hin). *)
+(*   - (* MUnionL *) *)
+(*     simpl. rewrite in_app_iff. *)
+(*     left. apply (IH Hin). *)
+(*   - (* MUnionR *) *)
+(*     simpl. rewrite in_app_iff. *)
+(*     right. apply (IH Hin). *)
+(*   - (* MStar0 *) *)
+(*     destruct Hin. *)
 
-(** Something interesting happens in the [MStarApp] case.  We obtain
-    _two_ induction hypotheses: One that applies when [x] occurs in
-    [s1] (which matches [re]), and a second one that applies when [x]
-    occurs in [s2] (which matches [Star re]).  This is a good
-    illustration of why we need induction on evidence for [exp_match],
-    as opposed to [re]: The latter would only provide an induction
-    hypothesis for strings that match [re], which would not allow us
-    to reason about the case [In x s2]. *)
+(* (** Something interesting happens in the [MStarApp] case.  We obtain *)
+(*     _two_ induction hypotheses: One that applies when [x] occurs in *)
+(*     [s1] (which matches [re]), and a second one that applies when [x] *)
+(*     occurs in [s2] (which matches [Star re]).  This is a good *)
+(*     illustration of why we need induction on evidence for [exp_match], *)
+(*     as opposed to [re]: The latter would only provide an induction *)
+(*     hypothesis for strings that match [re], which would not allow us *)
+(*     to reason about the case [In x s2]. *) *)
 
-  - (* MStarApp *)
-    simpl. rewrite in_app_iff in Hin.
-    destruct Hin as [Hin | Hin].
-    + (* In x s1 *)
-      apply (IH1 Hin).
-    + (* In x s2 *)
-      apply (IH2 Hin).
-Qed.
+(*   - (* MStarApp *) *)
+(*     simpl. rewrite in_app_iff in Hin. *)
+(*     destruct Hin as [Hin | Hin]. *)
+(*     + (* In x s1 *) *)
+(*       apply (IH1 Hin). *)
+(*     + (* In x s2 *) *)
+(*       apply (IH2 Hin). *)
+(* Qed. *)
 
 (** **** Exercise: 4 stars (re_not_empty)  *)
 (** Write a recursive function [re_not_empty] that tests whether a
@@ -1318,47 +1319,47 @@ Lemma star_app: forall T (s1 s2 : list T) (re re' : reg_exp T),
 
 Abort.
 
-Lemma star_app: forall T (s1 s2 : list T) (re : reg_exp T),
-  s1 =~ Star re ->
-  s2 =~ Star re ->
-  s1 ++ s2 =~ Star re.
-Proof.
-  intros T s1 s2 re H1.
-  remember (Star re) as re'.
+(* Lemma star_app: forall T (s1 s2 : list T) (re : reg_exp T), *)
+(*   s1 =~ Star re -> *)
+(*   s2 =~ Star re -> *)
+(*   s1 ++ s2 =~ Star re. *)
+(* Proof. *)
+(*   intros T s1 s2 re H1. *)
+(*   remember (Star re) as re'. *)
 
-(** We now have [Heqre' : re' = Star re]. *)
+(* (** We now have [Heqre' : re' = Star re]. *) *)
 
-  generalize dependent s2.
-  induction H1
-    as [|x'|s1 re1 s2' re2 Hmatch1 IH1 Hmatch2 IH2
-        |s1 re1 re2 Hmatch IH|re1 s2' re2 Hmatch IH
-        |re''|s1 s2' re'' Hmatch1 IH1 Hmatch2 IH2].
+(*   generalize dependent s2. *)
+(*   induction H1 *)
+(*     as [|x'|s1 re1 s2' re2 Hmatch1 IH1 Hmatch2 IH2 *)
+(*         |s1 re1 re2 Hmatch IH|re1 s2' re2 Hmatch IH *)
+(*         |re''|s1 s2' re'' Hmatch1 IH1 Hmatch2 IH2]. *)
 
-(** The [Heqre'] is contradictory in most cases, which allows us to
-    conclude immediately. *)
+(* (** The [Heqre'] is contradictory in most cases, which allows us to *)
+(*     conclude immediately. *) *)
 
-  - (* MEmpty *)  inversion Heqre'.
-  - (* MChar *)   inversion Heqre'.
-  - (* MApp *)    inversion Heqre'.
-  - (* MUnionL *) inversion Heqre'.
-  - (* MUnionR *) inversion Heqre'.
+(*   - (* MEmpty *)  inversion Heqre'. *)
+(*   - (* MChar *)   inversion Heqre'. *)
+(*   - (* MApp *)    inversion Heqre'. *)
+(*   - (* MUnionL *) inversion Heqre'. *)
+(*   - (* MUnionR *) inversion Heqre'. *)
 
-(** In the interesting cases (those that correspond to [Star]), we can
-    proceed as usual.  Note that the induction hypothesis [IH2] on the
-    [MStarApp] case mentions an additional premise [Star re'' = Star
-    re'], which results from the equality generated by [remember]. *)
+(* (** In the interesting cases (those that correspond to [Star]), we can *)
+(*     proceed as usual.  Note that the induction hypothesis [IH2] on the *)
+(*     [MStarApp] case mentions an additional premise [Star re'' = Star *)
+(*     re'], which results from the equality generated by [remember]. *) *)
 
-  - (* MStar0 *)
-    inversion Heqre'. intros s H. apply H.
-  - (* MStarApp *)
-    inversion Heqre'. rewrite H0 in IH2, Hmatch1.
-    intros s2 H1. rewrite <- app_assoc.
-    apply MStarApp.
-    + apply Hmatch1.
-    + apply IH2.
-      * reflexivity.
-      * apply H1.
-Qed.
+(*   - (* MStar0 *) *)
+(*     inversion Heqre'. intros s H. apply H. *)
+(*   - (* MStarApp *) *)
+(*     inversion Heqre'. rewrite H0 in IH2, Hmatch1. *)
+(*     intros s2 H1. rewrite <- app_assoc. *)
+(*     apply MStarApp. *)
+(*     + apply Hmatch1. *)
+(*     + apply IH2. *)
+(*       * reflexivity. *)
+(*       * apply H1. *)
+(* Qed. *)
 
 (** **** Exercise: 4 stars (exp_match_ex2)  *)
 
@@ -1366,14 +1367,14 @@ Qed.
     [MStar'] exercise above), shows that our definition of [exp_match]
     for [Star] is equivalent to the informal one given previously. *)
 
-Lemma MStar'' : forall T (s : list T) (re : reg_exp T),
-  s =~ Star re ->
-  exists ss : list (list T),
-    s = fold app ss []
-    /\ forall s', In s' ss -> s' =~ re.
-Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+(* Lemma MStar'' : forall T (s : list T) (re : reg_exp T), *)
+(*   s =~ Star re -> *)
+(*   exists ss : list (list T), *)
+(*     s = fold app ss [] *)
+(*     /\ forall s', In s' ss -> s' =~ re. *)
+(* Proof. *)
+(*   (* FILL IN HERE *) Admitted. *)
+(* (** [] *) *)
 
 (** **** Exercise: 5 stars, advanced (pumping)  *)
 (** One of the first interesting theorems in the theory of regular
@@ -1411,14 +1412,14 @@ Fixpoint napp {T} (n : nat) (l : list T) : list T :=
   | S n' => l ++ napp n' l
   end.
 
-Lemma napp_plus: forall T (n m : nat) (l : list T),
-  napp (n + m) l = napp n l ++ napp m l.
-Proof.
-  intros T n m l.
-  induction n as [|n IHn].
-  - reflexivity.
-  - simpl. rewrite IHn, app_assoc. reflexivity.
-Qed.
+(* Lemma napp_plus: forall T (n m : nat) (l : list T), *)
+(*   napp (n + m) l = napp n l ++ napp m l. *)
+(* Proof. *)
+(*   intros T n m l. *)
+(*   induction n as [|n IHn]. *)
+(*   - reflexivity. *)
+(*   - simpl. rewrite IHn, app_assoc. reflexivity. *)
+(* Qed. *)
 
 (** Now, the pumping lemma itself says that, if [s =~ re] and if the
     length of [s] is at least the pumping constant of [re], then [s]
@@ -1469,21 +1470,21 @@ End Pumping.
     tedious proof scripts.  Consider the proof of the following
     theorem: *)
 
-Theorem filter_not_empty_In : forall n l,
-  filter (beq_nat n) l <> [] ->
-  In n l.
-Proof.
-  intros n l. induction l as [|m l' IHl'].
-  - (* l = [] *)
-    simpl. intros H. apply H. reflexivity.
-  - (* l = m :: l' *)
-    simpl. destruct (beq_nat n m) eqn:H.
-    + (* beq_nat n m = true *)
-      intros _. rewrite beq_nat_true_iff in H. rewrite H.
-      left. reflexivity.
-    + (* beq_nat n m = false *)
-      intros H'. right. apply IHl'. apply H'.
-Qed.
+(* Theorem filter_not_empty_In : forall n l, *)
+(*   filter (beq_nat n) l <> [] -> *)
+(*   In n l. *)
+(* Proof. *)
+(*   intros n l. induction l as [|m l' IHl']. *)
+(*   - (* l = [] *) *)
+(*     simpl. intros H. apply H. reflexivity. *)
+(*   - (* l = m :: l' *) *)
+(*     simpl. destruct (beq_nat n m) eqn:H. *)
+(*     + (* beq_nat n m = true *) *)
+(*       intros _. rewrite beq_nat_true_iff in H. rewrite H. *)
+(*       left. reflexivity. *)
+(*     + (* beq_nat n m = false *) *)
+(*       intros H'. right. apply IHl'. apply H'. *)
+(* Qed. *)
 
 (** In the first branch after [destruct], we explicitly
     apply the [beq_nat_true_iff] lemma to the equation generated by
@@ -1542,11 +1543,11 @@ Proof.
     [beq_nat_iff_true] lemma into a more convenient form in terms of
     [reflect]: *)
 
-Lemma beq_natP : forall n m, reflect (n = m) (beq_nat n m).
-Proof.
-  intros n m.
-  apply iff_reflect. rewrite beq_nat_true_iff. reflexivity.
-Qed.
+(* Lemma beq_natP : forall n m, reflect (n = m) (beq_nat n m). *)
+(* Proof. *)
+(*   intros n m. *)
+(*   apply iff_reflect. rewrite beq_nat_true_iff. reflexivity. *)
+(* Qed. *)
 
 (** The new proof of [filter_not_empty_In] now goes as follows.
     Notice how the calls to [destruct] and [apply] are combined into a
@@ -1555,20 +1556,20 @@ Qed.
     the differences in proof state at the beginning of the first case
     of the [destruct].) *)
 
-Theorem filter_not_empty_In' : forall n l,
-  filter (beq_nat n) l <> [] ->
-  In n l.
-Proof.
-  intros n l. induction l as [|m l' IHl'].
-  - (* l = [] *)
-    simpl. intros H. apply H. reflexivity.
-  - (* l = m :: l' *)
-    simpl. destruct (beq_natP n m) as [H | H].
-    + (* n = m *)
-      intros _. rewrite H. left. reflexivity.
-    + (* n <> m *)
-      intros H'. right. apply IHl'. apply H'.
-Qed.
+(* Theorem filter_not_empty_In' : forall n l, *)
+(*   filter (beq_nat n) l <> [] -> *)
+(*   In n l. *)
+(* Proof. *)
+(*   intros n l. induction l as [|m l' IHl']. *)
+(*   - (* l = [] *) *)
+(*     simpl. intros H. apply H. reflexivity. *)
+(*   - (* l = m :: l' *) *)
+(*     simpl. destruct (beq_natP n m) as [H | H]. *)
+(*     + (* n = m *) *)
+(*       intros _. rewrite H. left. reflexivity. *)
+(*     + (* n <> m *) *)
+(*       intros H'. right. apply IHl'. apply H'. *)
+(* Qed. *)
 
 (** Although this technique arguably gives us only a small gain
     in convenience for this particular proof, using [reflect]
@@ -1762,11 +1763,11 @@ Example test_nostutter_4:      not (nostutter [3;1;1;4]).
 
 (** First prove an easy useful lemma. *)
 
-Lemma in_split : forall (X:Type) (x:X) (l:list X),
-  In x l ->
-  exists l1 l2, l = l1 ++ x :: l2.
-Proof.
-  (* FILL IN HERE *) Admitted.
+(* Lemma in_split : forall (X:Type) (x:X) (l:list X), *)
+(*   In x l -> *)
+(*   exists l1 l2, l = l1 ++ x :: l2. *)
+(* Proof. *)
+(*   (* FILL IN HERE *) Admitted. *)
 
 (** Now define a property [repeats] such that [repeats X l] asserts
     that [l] contains at least one repeated element (of type [X]).  *)
@@ -1788,15 +1789,15 @@ Inductive repeats {X:Type} : list X -> Prop :=
     manage to do this, you will not need the [excluded_middle]
     hypothesis. *)
 
-Theorem pigeonhole_principle: forall (X:Type) (l1  l2:list X),
-   excluded_middle ->
-   (forall x, In x l1 -> In x l2) ->
-   length l2 < length l1 ->
-   repeats l1.
-Proof.
-   intros X l1. induction l1 as [|x l1' IHl1'].
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+(* Theorem pigeonhole_principle: forall (X:Type) (l1  l2:list X), *)
+(*    excluded_middle -> *)
+(*    (forall x, In x l1 -> In x l2) -> *)
+(*    length l2 < length l1 -> *)
+(*    repeats l1. *)
+(* Proof. *)
+(*    intros X l1. induction l1 as [|x l1' IHl1']. *)
+(*   (* FILL IN HERE *) Admitted. *)
+(* (** [] *) *)
 
 
 (** $Date: 2015-08-11 12:03:04 -0400 (Tue, 11 Aug 2015) $ *)

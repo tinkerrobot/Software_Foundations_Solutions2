@@ -171,8 +171,8 @@ Proof. reflexivity. Qed.
 (** First, the empty map returns its default element for all keys: *)
 Lemma t_apply_empty:  forall A x v, @t_empty A v x = v.
 Proof.
-  intros A x v. unfold t_empty.
-  reflexivity. Qed.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (** **** Exercise: 2 stars, optional (t_update_eq)  *)
 (** Next, if we update a map [m] at a key [x] with a new value [v]
@@ -182,8 +182,8 @@ Proof.
 Lemma t_update_eq : forall A (m: total_map A) x v,
   (t_update m x v) x = v.
 Proof.
-  intros A m x v. unfold t_update.
-  rewrite <- beq_id_refl. reflexivity. Qed.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (** **** Exercise: 2 stars, optional (t_update_neq)  *)
 (** On the other hand, if we update a map [m] at a key [x1] and then
@@ -195,9 +195,8 @@ Theorem t_update_neq : forall (X:Type) v x1 x2
   x1 <> x2 ->
   (t_update m x1 v) x2 = m x2.
 Proof.
-  intros X v x1 x2 m H. unfold t_update.
-  apply false_beq_id in H. rewrite H.
-  reflexivity. Qed.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (** **** Exercise: 2 stars, optional (t_update_shadow)  *)
 (** If we update a map [m] at a key [x] with a value [v1] and then
@@ -210,15 +209,8 @@ Lemma t_update_shadow : forall A (m: total_map A) v1 v2 x,
     t_update (t_update m x v1) x v2
   = t_update m x v2.
 Proof.
-  intros A m v1 v2 x. apply functional_extensionality_dep.
-  induction x. induction n.
-  - intros x'. destruct x' as [n']. induction n'.
-    + apply t_update_eq.
-    + unfold t_update. simpl. reflexivity.
-  - intros x'. destruct x' as [n']. induction n'.
-    + unfold t_update. simpl. reflexivity.
-    + unfold t_update. simpl. destruct (n =? n') eqn: H. reflexivity. reflexivity.
-Qed.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (** For the final two lemmas about total maps, it's convenient to use
     the reflection idioms introduced in chapter [IndProp].  We begin
@@ -231,8 +223,8 @@ Qed.
 
 Lemma beq_idP : forall x y, reflect (x = y) (beq_id x y).
 Proof.
-  intros x y. apply iff_reflect. rewrite beq_id_true_iff. reflexivity.
-Qed.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (** Now, given [id]s [x1] and [x2], we can use the [destruct (beq_idP
     x1 x2)] to simultaneously perform case analysis on the result of
@@ -248,17 +240,8 @@ Qed.
 Theorem t_update_same : forall X x (m : total_map X),
   t_update m x (m x) = m.
 Proof.
-  intros X x m. apply functional_extensionality.
-  destruct x. induction n.
-  - intros x'. destruct x' as [n']. induction n'.
-    + reflexivity.
-    + unfold t_update. reflexivity.
-  - intros x'. destruct x' as [n']. induction n'.
-    + unfold t_update. reflexivity.
-    + unfold t_update. destruct (beq_id (Id (S n)) (Id (S n'))) eqn: H.
-      { rewrite beq_id_true_iff in H. rewrite H. reflexivity. }
-      { reflexivity. }
-Qed.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (** **** Exercise: 3 stars, recommended (t_update_permute)  *)
 (** Use [beq_idP] to prove one final property of the [update]
@@ -271,12 +254,8 @@ Theorem t_update_permute : forall (X:Type) v1 v2 x1 x2
     (t_update (t_update m x2 v2) x1 v1)
   = (t_update (t_update m x1 v1) x2 v2).
 Proof.
-  intros X v1 v2 x1 x2 m Hneq. apply functional_extensionality.
-  intros x. unfold t_update. destruct (beq_id x1 x) eqn: H1.
-  - apply beq_id_true_iff in H1. rewrite <- H1. rewrite <- beq_id_false_iff in Hneq.
-    rewrite Hneq. reflexivity.
-  - reflexivity.
-Qed.
+  (* FILL IN HERE *) Admitted.
+(** [] *)
 
 (* ################################################################# *)
 (** * Partial maps *)
@@ -345,3 +324,4 @@ Proof.
 Qed.
 
 (** $Date: 2015-12-11 17:17:29 -0500 (Fri, 11 Dec 2015) $ *)
+
