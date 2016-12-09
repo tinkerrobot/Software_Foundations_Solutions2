@@ -12,11 +12,15 @@ Require Export P04.
    You can use the following intro pattern:
      destruct ... as [[? | ?] | [? ?]].
 *)
-
+Hint Constructors bstep.
 Theorem bexp_strong_progress: forall st b,
   (b = BTrue \/ b = BFalse) \/
   exists b', b / st ==>b b'.
 Proof.
-  exact FILL_IN_HERE.
+  intros st b. induction b; eauto; right;
+  try (destruct (aexp_strong_progress st a); destruct (aexp_strong_progress st a0);
+  inversion H; inversion H0; subst; try eauto).
+  try (destruct IHb as [[BT | BF] | [b' IB]]; try subst; try eauto).
+  destruct IHb1 as [[ | ] | []]; destruct IHb2 as [[ | ] | []]; try subst; try eauto.
 Qed.
 

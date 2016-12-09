@@ -26,5 +26,6 @@ Theorem double_negation_elimination_to_excluded_middle:
 Proof.
   unfold excluded_middle. unfold double_negation_elimination.
   intros double_neg P'. unfold not. unfold not in double_neg.
-  apply double_neg. intros H. apply H.  right. intros H'. apply H. left. apply H'.
+  apply double_neg. intros H. apply H. right.
+  intros HP. apply H. left. assumption.
 Qed.

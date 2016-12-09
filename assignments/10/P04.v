@@ -13,11 +13,14 @@ Require Export P03.
    You can use the following intro pattern:
      destruct ... as [[? ?] | [? ?]].
 *)
-
+Hint Constructors aval.
+Hint Constructors astep.
 Theorem aexp_strong_progress: forall st a,
   (exists n, a = ANum n) \/
   exists a', a / st ==>a a'.
 Proof.
-  exact FILL_IN_HERE.
+  induction a; try eauto;
+  destruct IHa1; try destruct H; destruct IHa2; try destruct H0; try eauto;
+  try subst; try eauto.
 Qed.
 
