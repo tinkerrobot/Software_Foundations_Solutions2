@@ -29,11 +29,10 @@ Proof with auto.
       + (* ST_IfFalse *) assumption.
       + (* ST_If *) apply T_If; try assumption.
         apply IHHT1; assumption.
-    - (* T_Succ *)
-      exact FILL_IN_HERE.
-  - (* T_Pred *)
-    exact FILL_IN_HERE.
-  - (* T_Iszero *)
-    exact FILL_IN_HERE.
+    - (* T_Succ *) inversion HE. apply T_Succ. eauto.
+      
+  - (* T_Pred *) inversion HE; eauto. subst. inversion HT. assumption.
+    
+  - (* T_Iszero *) inversion HE...
 Qed.
 

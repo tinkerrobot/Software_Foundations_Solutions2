@@ -28,11 +28,15 @@ Proof with auto.
     + (* t1 can take a step *)
       inversion H as [t1' H1].
       exists (tif t1' t2 t3)...
-  - (* T_Succ *)
-    exact FILL_IN_HERE.
-  - (* T_Pred *)
-    exact FILL_IN_HERE.
-  - (* T_Iszero *)
-    exact FILL_IN_HERE.
+  - (* T_Succ *) destruct IHHT as [H|H].
+    + left. apply nat_canonical in HT...
+    + right. inversion H. eauto.
+    
+  - (* T_Pred *) destruct IHHT as [H|H].
+    + right. apply nat_canonical in HT; try assumption. inversion HT; eauto.
+    + right. inversion H. eauto.
+  - (* T_Iszero *) destruct IHHT as [H|H].
+    + right. apply nat_canonical in HT; eauto. inversion HT; subst; eauto.
+    + right. inversion H. eauto.
 Qed.
 

@@ -7,6 +7,10 @@ Corollary soundness : forall t t' T,
   t ==>* t' ->
   ~(stuck t').
 Proof.
-  exact FILL_IN_HERE.
+  intros t t' T He Hs. intros [Hn Hv].
+  induction Hs. destruct (progress x T He). 
+  - apply Hv in H. destruct H.
+  - apply Hn in H. destruct H.
+  - apply IHHs; eauto. eapply preservation. apply He. apply H.
 Qed.
 
