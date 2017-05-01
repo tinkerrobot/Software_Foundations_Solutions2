@@ -39,37 +39,21 @@ Require Export P07.
       Hint: choose your induction carefully! *)
 
 Inductive subseq {X: Type}: list X -> list X -> Prop :=
-| empty l : subseq [] l
-| removeone x l1 l2 : subseq l1 l2 -> subseq l1 (x :: l2)
-| removetwo x l1 l2 : subseq l1 l2 -> subseq (x :: l1) (x :: l2). 
+| subseq_nil : subseq [] []
+| subseq_addboth : forall (l l1 : list X) (h : X), subseq l1 l -> subseq (h::l1) (h::l)
+| subseq_addone : forall (l l1 : list X) (h : X), subseq l1 l -> subseq l1 (h::l).
 
 Example subseq_ex1: subseq [1;2;3] [1;2;3].
-Proof.
-  repeat apply removetwo. apply empty.
-Qed.
+Proof. repeat constructor. Qed.
 
 Example subseq_ex2: subseq [1;2;3] [1;1;1;2;2;3].
-Proof.
-  apply removeone. apply removeone. repeat apply removetwo. apply removeone. apply removetwo. apply empty.
-Qed.
+Proof. repeat constructor. Qed.
 
 Example subseq_ex3: subseq [1;2;3] [1;2;7;3].
-Proof.
-  repeat apply removetwo. apply removeone. apply removetwo. apply empty.
-Qed.
+Proof. repeat constructor. Qed.
 
 Example subseq_ex4: subseq [1;2;3] [5;6;1;9;9;2;7;3;8].
-Proof.
-  apply removeone.
-  apply removeone.
-  apply removetwo.
-  apply removeone.
-  apply removeone.
-  apply removetwo.
-  apply removeone.
-  apply removetwo.
-  apply empty.
-Qed.
+Proof. repeat constructor. Qed.
 
 Example subseq_ex5: ~ subseq [1;2;3] [1;2].
 Proof.
@@ -90,8 +74,8 @@ Lemma subseq_refl: forall X (l: list X),
   subseq l l.
 Proof.
   intros. induction l.
-  - apply empty.
-  - apply removetwo. apply IHl.
+  - constructor.
+  - constructor. assumption.
 Qed.
 
 Lemma subseq_app: forall X (l1 l2 l3: list X)
@@ -100,8 +84,9 @@ Lemma subseq_app: forall X (l1 l2 l3: list X)
 Proof.
   intros X l1 l2 l3 SUB.
   induction SUB.
-  - apply empty.
-  - assert ((x :: l2) ++ l3 = x :: (l2 ++ l3)) as H. { reflexivity. } rewrite H. apply removeone. apply IHSUB.
-  - assert ((x :: l2) ++ l3 = x :: (l2 ++ l3)) as H. { reflexivity. } rewrite H. apply removetwo. apply IHSUB.   
+  - simpl. induction l3.
+    + constructor.
+    + constructor. assumption.
+  - simpl. constructor. assumption.
+  - simpl. constructor. assumption.
 Qed.
-

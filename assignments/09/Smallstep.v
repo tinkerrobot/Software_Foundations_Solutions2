@@ -196,8 +196,8 @@ Example test_step_2 :
           (C 2)
           (C (0 + 3))).
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  apply ST_Plus2. apply ST_Plus2. apply ST_PlusConstConst.
+Qed.
 
 End SimpleArith1.
 
@@ -451,7 +451,9 @@ Inductive step : tm -> tm -> Prop :=
 Theorem step_deterministic :
   deterministic step.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold deterministic. intros x y1 y2 Hy1 Hy2.
+  generalize dependent y2. simpl.
+(* FILL IN HERE *) Admitted.
 (** [] *)
 
 (* ================================================================= *)

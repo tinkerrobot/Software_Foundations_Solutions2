@@ -8,28 +8,12 @@ Theorem CIf_congruence : forall b b' c1 c1' c2 c2',
   cequiv (IFB b THEN c1 ELSE c2 FI)
          (IFB b' THEN c1' ELSE c2' FI).
 Proof.
-  unfold bequiv,cequiv.
-  intros b b' c1 c1' c2 c2' Hbe Hc1e Hc2e st st'.
-  split; intros H.
-  - (* -> *)
-    remember (IFB b THEN c1 ELSE c2 FI) as cif
-      eqn:Heqcif.
-    induction H; inversion Heqcif; subst.
-    + (* IfTrue *) apply E_IfTrue.
-      * rewrite <- (Hbe st). assumption.
-      * apply Hc1e. assumption.
-    + (* IfFalse *) apply E_IfFalse.
-      * rewrite <- (Hbe st). assumption.
-      * apply Hc2e. assumption.
-  - (* <- *)
-    remember (IFB b' THEN c1' ELSE c2' FI) as cif
-      eqn:Heqcif.
-    induction H; inversion Heqcif; subst.
-    + (* IfTrue *) apply E_IfTrue.
-      * rewrite (Hbe st). assumption.
-      * apply Hc1e. assumption.
-    + (* IfFalse *) apply E_IfFalse.
-      * rewrite (Hbe st). assumption.
-      * apply Hc2e. assumption.
+  unfold cequiv. intros. split; intros.
+  - inversion H2; subst.
+    + rewrite H in H8. rewrite H0 in H9. eapply E_IfTrue. assumption. assumption.
+    + rewrite H in H8. rewrite H1 in H9. eapply E_IfFalse. assumption. assumption.
+  - inversion H2; subst.
+    + rewrite <- H in H8. rewrite <- H0 in H9. eapply E_IfTrue. assumption. assumption.
+    + rewrite <- H in H8. rewrite <- H1 in H9. eapply E_IfFalse. assumption. assumption.
 Qed.
 

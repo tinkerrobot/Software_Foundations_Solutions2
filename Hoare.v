@@ -442,8 +442,21 @@ Proof.
    ...into formal statements (use the names [assn_sub_ex1] 
    and [assn_sub_ex2]) and use [hoare_asgn] to prove them. *)
 
-(* FILL IN HERE *)
-(** [] *)
+Example assn_sub_ex1 :
+  {{(fun st => st X <= 5) [X |-> (APlus (AId X) (ANum 1))]}}
+    (X ::= (APlus (AId X) (ANum 1)))
+    {{fun st => st X <= 5 }}.
+Proof.
+  apply hoare_asgn.
+Qed.
+
+Example assn_sub_ex2 :
+  {{(fun st => (0 <= st X /\ st X <= 5)) [X |-> (ANum 3)] }}
+    X ::= (ANum 3)
+    {{fun st => 0 <= st X /\ st X <= 5 }}.
+Proof.
+  apply hoare_asgn.
+Qed.
 
 (** **** Exercise: 2 stars (hoare_asgn_wrong)  *)
 (** The assignment rule looks backward to almost everyone the first
@@ -460,8 +473,27 @@ Proof.
     [a], and your counterexample needs to exhibit an [a] for which 
     the rule doesn't work.) *)
 
-(* FILL IN HERE *)
-(** [] *)
+Lemma beq_id_refl : forall x,
+    beq_id x x = true.
+Proof.
+  intros. unfold beq_id. simpl. induction x. induction n.
+  - reflexivity.
+  - simpl. assumption.  
+Qed.
+
+Theorem hoare_asgn_wrong:
+  exists a, ~ {{ fun st => True }} X ::= a {{ fun st => st X = aeval st a}}.
+Proof.
+  remember (t_update empty_state X 0) as st eqn: Heqst.
+  remember (APlus (AId X) (ANum 1)) as X' eqn: HeqX'.
+  remember (t_update st X (aeval st X')) as st' eqn: Heqst'.
+  exists X'. intros H.
+  assert (st' X = aeval st' X' -> False) as Hcontra.
+  { subst. simpl. unfold t_update. rewrite beq_id_refl. intros H'. inversion H'. }
+  apply Hcontra. eapply H.
+  - rewrite Heqst'. apply E_Ass. reflexivity.
+  - reflexivity.    
+Qed.
 
 (** **** Exercise: 3 stars, advanced (hoare_asgn_fwd)  *)
 (** However, by using an auxiliary variable [m] to remember the 
@@ -491,8 +523,26 @@ Theorem hoare_asgn_fwd :
             /\ st X = aeval (t_update st X m) a }}.
 Proof.
   intros functional_extensionality m a P.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  unfold hoare_triple.
+  intros st st' HX [HP HeqXm].
+  split.
+  - (* left *)
+    inversion HX. subst. rewrite t_update_shadow.
+    assert (st = t_update st X (st X)) as Heqst.
+    { unfold t_update, beq_id. simpl. apply functional_extensionality.
+      intros X. induction X. induction n.
+      - reflexivity.
+      - reflexivity. }
+    rewrite <- Heqst. assumption.
+  - (* right *)
+    inversion HX. subst. rewrite t_update_shadow.
+    assert (st = t_update st X (st X)) as Heqst.
+    { unfold t_update, beq_id. simpl. apply functional_extensionality.
+      intros X. induction X. induction n.
+      - reflexivity.
+      - reflexivity. }
+    rewrite <- Heqst. apply t_update_eq.
+Qed.
 
 (** **** Exercise: 2 stars, advanced (hoare_asgn_fwd_exists)  *)
 (** Another way to define a forward rule for assignment is to
@@ -516,8 +566,19 @@ Theorem hoare_asgn_fwd_exists :
                 st X = aeval (t_update st X m) a }}.
 Proof.
   intros functional_extensionality a P.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  unfold hoare_triple.
+  intros st st' HX HP.
+  exists (st X).
+  split.
+  - (* left *) 
+    assert (st = t_update st' X (st X)) as Heq.
+    { inversion HX. subst. rewrite t_update_shadow. rewrite t_update_same. reflexivity. }
+    rewrite <- Heq. assumption.
+  - (* right *)
+    assert (st = t_update st' X (st X)) as Heq.
+    { inversion HX. subst. rewrite t_update_shadow. rewrite t_update_same. reflexivity. }
+    rewrite <- Heq. inversion HX. rewrite t_update_eq. symmetry. assumption.
+Qed.
 
 (* ================================================================= *)
 (** ** Consequence *)
@@ -653,7 +714,7 @@ Example hoare_asgn_example1' :
 Proof.
   eapply hoare_consequence_pre.
   apply hoare_asgn.
-  intros st H.  reflexivity.  Qed.
+  intros st H. reflexivity.  Qed.
 
 (** In general, [eapply H] tactic works just like [apply H] except
     that, instead of failing if unifying the goal with the conclusion
@@ -747,8 +808,25 @@ Qed.
    [assn_sub_ex2']) and use [hoare_asgn] and [hoare_consequence_pre] 
    to prove them. *)
 
-(* FILL IN HERE *)
-(** [] *)
+Example assn_sub_ex1' :
+  {{(fun st => (st X) + 1 <= 5)}}
+    (X ::= (APlus (AId X) (ANum 1)))
+    {{fun st => st X <= 5 }}.
+Proof.
+  eapply hoare_consequence_pre.
+  - apply hoare_asgn.
+  - unfold assert_implies, assn_sub. intros st H. simpl. rewrite t_update_eq. assumption.
+Qed.
+
+Example assn_sub_ex2' :
+  {{(fun st => (0 <= 3 /\ 3 <= 5))}}
+    X ::= (ANum 3)
+    {{fun st => 0 <= st X /\ st X <= 5 }}.
+Proof.
+  eapply hoare_consequence_pre.
+  - apply hoare_asgn.
+  - unfold assert_implies, assn_sub. intros st H. simpl. rewrite t_update_eq. assumption.
+Qed.
 
 (* ================================================================= *)
 (** ** Skip *)
@@ -846,8 +924,16 @@ Example hoare_asgn_example4 :
   {{fun st => True}} (X ::= (ANum 1);; Y ::= (ANum 2))
   {{fun st => st X = 1 /\ st Y = 2}}.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  eapply hoare_seq.
+  - (* Y <= 2 *)
+    apply hoare_asgn.
+  - (* X <= 1 *)
+    eapply hoare_consequence_pre.
+    + eapply hoare_asgn.
+    + intros st H. split.
+      * simpl. unfold t_update. subst. reflexivity.
+      * simpl. apply t_update_eq.
+Qed.
 
 (** **** Exercise: 3 stars (swap_exercise)  *)
 (** Write an Imp program [c] that swaps the values of [X] and [Y] and
@@ -1008,7 +1094,16 @@ Theorem if_minus_plus :
   FI
   {{fun st => st Y = st X + st Z}}.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply hoare_if.
+  - (* Then *)
+    eapply hoare_consequence_pre. apply hoare_asgn.
+    unfold bassn, assn_sub, t_update, assert_implies.
+    simpl. intros st [_ H]. apply leb_complete in H. inversion H; omega.
+  - (* Else *)
+    eapply hoare_consequence_pre. apply hoare_asgn.
+    unfold bassn, assn_sub, t_update, assert_implies.
+    simpl. intros st [_ H]. reflexivity.
+Qed.
 
 (* ----------------------------------------------------------------- *)
 (** *** Exercise: One-sided conditionals *)

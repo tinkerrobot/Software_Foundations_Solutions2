@@ -25,13 +25,13 @@ Lemma All_In :
 Proof.
   intros T P l. split.
   - (* -> *) intros H. induction l.
-    + simpl. auto.
+    + simpl. reflexivity.
     + simpl. split.
       { apply H. simpl. left. reflexivity. }
-      { apply IHl. intros x0 H0. apply H. simpl. right. apply H0. }
+      { apply IHl. intros x0 H0. apply H. simpl. right. assumption. }
   - (* <- *) intros H. induction l.
     + simpl. intros x0 H0. contradiction.
     + simpl. intros x0 H0. destruct H0 as [|H1 H2].
-      { simpl in H. apply proj1 in H. rewrite H0 in H. apply H. }
-      { simpl in H. apply proj2 in H. apply IHl with x0 in H. apply H. apply H1. }
+      { simpl in H. destruct H. subst. assumption. }
+      { simpl in H. destruct H. apply IHl. assumption. assumption. }
 Qed.

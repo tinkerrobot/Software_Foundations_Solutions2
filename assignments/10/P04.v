@@ -1,7 +1,5 @@
 Require Export P03.
 
-
-
 (* Hint: 
 
    First study the chapter "Auto.v".
@@ -12,12 +10,16 @@ Require Export P03.
   
    You can use the following intro pattern:
      destruct ... as [[? ?] | [? ?]].
-*)
+ *)
+
+Hint Constructors aval.
+Hint Constructors astep.
 
 Theorem aexp_strong_progress: forall st a,
   (exists n, a = ANum n) \/
   exists a', a / st ==>a a'.
 Proof.
-  exact FILL_IN_HERE.
+  intros st a;
+  induction a; eauto; destruct IHa1; destruct IHa2; destruct H; destruct H0; subst; eauto.      
 Qed.
 

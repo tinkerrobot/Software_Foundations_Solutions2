@@ -20,8 +20,11 @@ Inductive ev' : nat -> Prop :=
 Theorem ev'_ev : forall n, ev' n <-> ev n.
 Proof.
   intros n. split.
-  - intros H. induction H. constructor. repeat constructor.
-  apply ev_sum; assumption.
-  - intros. induction H. constructor. apply ev'_sum with (n := 2) (m := n).
-  constructor. assumption.
+  - intros H. induction H.
+    + constructor.
+    + repeat constructor.
+    + apply ev_sum; assumption.
+  - intros H. induction H.
+    + constructor.
+    + apply ev'_sum with (n := 2) (m := n). constructor. assumption.
 Qed.

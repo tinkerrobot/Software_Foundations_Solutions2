@@ -20,6 +20,6 @@ Theorem inequiv_exercise:
   ~ cequiv (WHILE BTrue DO SKIP END) SKIP.
 Proof.
   intro H.
-  apply loop_never_stops with empty_state empty_state.
-  unfold loop. apply H. apply E_Skip.
+  eapply loop_never_stops with empty_state empty_state.
+  unfold loop. apply H. constructor.
 Qed.

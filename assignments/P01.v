@@ -14,12 +14,24 @@ Require Export D.
     arithmetic expression [a], and your counterexample needs to
     exhibit an [a] for which the rule doesn't work. *)
 
+Lemma beq_id_refl : forall x,
+    beq_id x x = true.
+Proof.
+  intros. unfold beq_id. simpl. induction x. induction n.
+  - reflexivity.
+  - simpl. assumption.  
+Qed.
+
 Theorem hoare_asgn_wrong:
   exists a, ~ {{ fun st => True }} X ::= a {{ fun st => st X = aeval st a}}.
 Proof.
-  exists (APlus (AId X) (ANum 1)). unfold not. intros Hcontra.
-  simpl in Hcontra. unfold hoare_triple in Hcontra.
-  assert ((t_update empty_state X 1) X = (t_update empty_state X 1) X + 1).
-  { eapply Hcontra. apply E_Ass. reflexivity. reflexivity. }
-  simpl in H. inversion H.
+  remember (t_update empty_state X 0) as st eqn: Heqst.
+  remember (APlus (AId X) (ANum 1)) as X' eqn: HeqX'.
+  remember (t_update st X (aeval st X')) as st' eqn: Heqst'.
+  exists X'. intros H.
+  assert (st' X = aeval st' X' -> False) as Hcontra.
+  { subst. simpl. unfold t_update. rewrite beq_id_refl. intros H'. inversion H'. }
+  apply Hcontra. eapply H.
+  - rewrite Heqst'. apply E_Ass. reflexivity.
+  - reflexivity.    
 Qed.

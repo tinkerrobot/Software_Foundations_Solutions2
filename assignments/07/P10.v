@@ -80,8 +80,7 @@ Proof.
       apply trans_cequiv with c2; try assumption.
       apply IFB_false; assumption.
   - (* WHILE *)
-    assert (bequiv b (fold_constants_bexp b)). {
-      apply fold_constants_bexp_sound. }
+    assert (bequiv b (fold_constants_bexp b)). { apply fold_constants_bexp_sound. }
     destruct (fold_constants_bexp b) eqn:Heqb;
       try (apply CWhile_congruence; assumption).    
     + (* b always true *)

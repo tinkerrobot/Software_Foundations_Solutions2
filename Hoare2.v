@@ -229,19 +229,44 @@ These decorations were constructed as follows:
 
    {{ True }}
   IFB X <= Y THEN
-      {{                         }} ->>
-      {{                         }}
+      {{ True /\ X <= Y }} ->>
+      {{ Y = X + (Y - X) }}
     Z ::= Y - X
-      {{                         }}
+      {{ Y = X + Z }}
   ELSE
-      {{                         }} ->>
-      {{                         }}
+      {{ True /\ ~(X <= Y) }} ->>
+      {{ (X + Z) = X + Z }}
     Y ::= X + Z
-      {{                         }}
+      {{ Y = X + Z }}
   FI
     {{ Y = X + Z }}
 *)
 (** [] *)
+
+Definition if_minus_plus_reloaded : com :=
+    IFB (BLe (AId X) (AId Y))
+    THEN (Z ::= AMinus (AId Y) (AId X))
+    ELSE (Y ::= APlus (AId X) (AId Z))
+    FI.
+
+Theorem if_minus_plus_reloaded_correct :
+  {{fun st => True}}
+   if_minus_plus_reloaded
+  {{fun st => st Y = st X + st Z}}.
+Proof.
+  unfold if_minus_plus_reloaded.
+  eapply hoare_consequence_pre.
+  - apply hoare_if.
+    + (* THEN *)
+      eapply hoare_consequence_pre. apply hoare_asgn.
+      intros st [H1 H2]. unfold assn_sub, t_update, beq_id. simpl.
+      unfold bassn in H2. simpl in H2. apply leb_complete in H2.
+      apply le_plus_minus. assumption.
+    + (* ELSE *)
+      eapply hoare_consequence_pre. apply hoare_asgn.
+      intros st [H1 H2]. reflexivity.
+  - intros st H. apply H.
+Qed.
 
 (* ================================================================= *)
 (** ** Example: Reduce to Zero *)
@@ -825,7 +850,36 @@ Proof.
     {{ Y = m! }}
 *)
 
+Print fact.
 
+Theorem factorial_correct: forall m,
+  {{ fun st => st X = m }} 
+  Y ::= ANum 1 ;;
+  WHILE BNot (BEq (AId X) (ANum 0))
+  DO
+     Y ::= AMult (AId Y) (AId X) ;;
+     X ::= AMinus (AId X) (ANum 1)
+  END
+  {{ fun st => st Y = fact m }}.
+Proof.
+  intros m. eapply hoare_consequence with (P':= (fun st=> fact (st X) * st Y = fact m)[Y|->ANum 1]) (Q':= (fun st => fact (st X) * st Y = fact m /\ st X = 0)).
+
+  (* intros m. induction m; simpl. *)
+  (* - apply hoare_seq with (fun st : state =>  st X = 0 /\ st Y = 1); unfold hoare_triple. *)
+  (*   + intros st st' H [HX HY]. inversion H; subst. *)
+  (*     * assumption. *)
+  (*     * inversion H2. unfold negb in H1. rewrite HX in H1. simpl in H1. inversion H1. *)
+  (*   + intros st st' HY HX; (split; inversion HY; subst; simpl). *)
+  (*     * rewrite t_update_neq. assumption. unfold not. intros Hcontra. inversion Hcontra. *)
+  (*     * rewrite t_update_eq. reflexivity. *)
+  (* - apply hoare_seq with (fun st : state => st X = m /\ st Y = 1); unfold hoare_triple. *)
+  (*   + intros st st' H [HX HY]. inversion H; subst. *)
+  (*     * inversion H4. apply negb_false_iff in H1. apply beq_nat_true in H1. rewrite H1, HY. reflexivity. *)
+  (*     * inversion H3. subst. clear H3. inversion H6; subst; clear H6. *)
+  (*       ** inversion H; subst; clear H. *)
+  (*          *** rewrite H7 in H2. apply eq_true_false_abs in H2. contradiction. reflexivity. *)
+  (*          *** clear H3. clear H5. clear H10. clear st'0. simpl in H7. apply negb_false_iff in H7. apply beq_nat_true in H7. inversion H8. subst st0 a1 n x . subst. simpl in H7. assert (st'1 X <= 1) as H. { unfold t_update, beq_id in H7. simpl in H7. apply Nat.sub_0_le in H7. assumption. } induction H. *)
+  (*              ++ simpl. rewrite t_update_neq. rewrite <- HY in IHm. *)
 (** [] *)
 
 

@@ -16,7 +16,7 @@ Theorem or_distributes_over_and : forall P Q R : Prop,
   P \/ (Q /\ R) <-> (P \/ Q) /\ (P \/ R).
 Proof.
   intros P Q R. split.
-  - (* -> *) intros H. inversion H.
+  - (* -> *) intros H. inversion  H.
     + split.
       { left. apply H0. }
       { left. apply H0. }

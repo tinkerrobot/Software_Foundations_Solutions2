@@ -15,7 +15,7 @@ Require Export P03.
 Theorem excluded_middle_to_double_negation_elimination:
   excluded_middle -> double_negation_elimination.
 Proof.
-  unfold excluded_middle. unfold double_negation_elimination.
+  unfold excluded_middle, double_negation_elimination.
   intros ex P neg. unfold not in neg. destruct (ex P).
   - apply H.
   - unfold not in H. apply neg in H. contradiction.
@@ -24,7 +24,6 @@ Qed.
 Theorem double_negation_elimination_to_excluded_middle:
   double_negation_elimination -> excluded_middle.
 Proof.
-  unfold excluded_middle. unfold double_negation_elimination.
-  intros double_neg P'. unfold not. unfold not in double_neg.
-  apply double_neg. intros H. apply H.  right. intros H'. apply H. left. apply H'.
+  unfold excluded_middle, double_negation_elimination.
+  intros dn P. apply dn. intros H. apply H. right. intros H'. apply H. left. assumption.
 Qed.

@@ -11,34 +11,70 @@ Require Export P08.
 
 (** First prove an easy useful lemma. *)
 
+Lemma lt_S: forall n m,
+    S n < S m -> n < m.
+Proof.
+intros.
+induction m.
+- inversion H. inversion H1.
+- inversion H. auto.
+  apply IHm in H1.
+  constructor.
+  assumption.
+Qed.
+
 Lemma in_split : forall (X:Type) (x:X) (l:list X),
   In x l ->
   exists l1 l2, l = l1 ++ x :: l2.
 Proof.
-  intros X x l H. induction l as [|x' l' IHl'].
-  - inversion H.
-  - inversion H as [Heq | Hin].
-    + exists [], l'. simpl. rewrite Heq. reflexivity.
-    + apply IHl' in Hin. inversion Hin as [lf Hf]. inversion Hf as [lb Hb].
-      exists (x'::lf), lb. rewrite Hb. reflexivity.
-Qed.
-
-Lemma alc : forall (X:Type) (x:X) (l1 l2 : list X),
-  length (l1 ++ x :: l2) = S (length(l1 ++ l2)).
-Proof. intros. induction l1.
-  - simpl. reflexivity.
-  - simpl. rewrite IHl1. reflexivity.
+intros.
+induction l.
+- inversion H.
+- inversion H.
+  + rewrite H0 in *.
+    exists [], l.
+    reflexivity.
+  + apply IHl in H0.
+    inversion H0.
+    inversion H1.
+    exists (a::x0).
+    exists x1.
+    simpl.
+    rewrite H2.
+    reflexivity.
 Qed.
 
 (** Now define a property [repeats] such that [repeats X l] asserts
     that [l] contains at least one repeated element (of type [X]).  *)
 
-(*
 Inductive repeats {X:Type} : list X -> Prop :=
 | rp_base: forall x l, In x l -> repeats (x::l)
 | rp_next: forall x l, repeats l -> repeats (x::l)
 .
-*)
+
+Theorem len_plus: forall (X:Type) (l1:list X) (l2:list X),
+    length (l1++l2) = length l1 + length l2.
+Proof.
+intros.
+induction l1.
+- reflexivity.
+- simpl. rewrite IHl1. auto.
+Qed.
+
+Theorem in_case_diff:forall (X:Type) (x:X) (x2:X) (l1 l2:list X),
+  In x2 (l1++x::l2) -> x <> x2 -> In x2 (l1++l2).
+Proof.
+intros.
+induction l1.
+- simpl. simpl in H. destruct H.
+  + apply H0 in H. inversion H.
+  + assumption.
+- simpl. simpl in H.
+  destruct H.
+  + auto.
+  + right. auto.
+Qed.
+
 
 (** Now, here's a way to formalize the pigeonhole principle.  Suppose
     list [l2] represents a list of pigeonhole labels, and list [l1]
@@ -53,98 +89,27 @@ Inductive repeats {X:Type} : list X -> Prop :=
     manage to do this, you will not need the [excluded_middle]
     hypothesis. *)
 
-Lemma leSS : forall a b, 
-  S a <= b -> a <= b.
-Proof.
-   intros. generalize dependent b. induction a.
-        - intros. apply le_0_n.
-        - intros. destruct b. inversion H. apply le_S_n in H.
-          apply IHa in H. apply le_n_S. apply H.
-Qed.
-
-Lemma Inor : forall (X: Type) (l1 l2 : list X) (x : X),
-  In x (l1++l2) <-> In x l1 \/ In x l2.
-Proof. intros. induction l1.
-  - simpl. split. 
-    + intros. right. apply H.
-    + intros H. inversion H. inversion H0. apply H0.
-  - simpl. split.
-    + intros [HL | HR]. 
-      ++ left. left. apply HL.
-      ++ apply or_assoc. right. apply IHl1 in HR. apply HR.
-    + intros [HL | HR].
-      ++ inversion HL. 
-        +++ left. apply H.
-        +++ right. apply or_introl with (B:= In x l2) in H.
-            apply IHl1 in H. apply H.
-      ++ right. apply or_intror with (A:= In x l1) in HR.
-         apply IHl1 in HR. apply HR.
-Qed.
-
-(*
-Inductive repeats {X:Type} : list X -> Prop :=
-| rp_base: forall x l, In x l -> repeats (x::l)
-| rp_next: forall x l, repeats l -> repeats (x::l)
-.
- *)
-
 Theorem pigeonhole_principle: forall (X:Type) (l1  l2:list X),
    excluded_middle ->
    (forall x, In x l1 -> In x l2) ->
    length l2 < length l1 ->
-   repeats l1.
+   repeats l1.    
 Proof.
-  intros X l1 l2 E H1 H2. unfold excluded_middle in E. generalize dependent l2.
-  induction l1 as [|x l1' IHl1'].
-   - intros. inversion H2.
-   - intros. destruct E with (P:= In x l1').
-     + apply rp_base in H. assumption.
-     + simpl in H1. unfold not in H. apply rp_next. apply IHl1' with l2.
-       { intros x' H'. apply H1. right. assumption. }
-       assert (x = x) as eq. { reflexivity. }
-        apply or_introl with (B:= In x l1') in eq. apply H1 in eq.
-        apply in_split in eq.
-        inversion eq as [l1 [l3 H3]].
-        apply IHl1' with (l2:=l1++l3) in H as H4.
-        + apply rp_next with (x0:=x) in H4. apply H4.
-        + intros. destruct H with (P:=x=x0).
-          ++ rewrite H5 in H2. unfold not in H2. 
-              apply H2 in H4. destruct H4.
-          ++ apply or_intror with (A:=x=x0) in H4.
-              apply H0 in H4. rewrite H3 in H4. 
-              apply Inor in H4. inversion H4.
-            +++ apply or_introl with (B:= In x0 l3) in H6.
-                apply Inor in H6. apply H6.
-            +++ simpl in H6. inversion H6.
-              ++++ rewrite H7 in H5. destruct H5. reflexivity.
-              ++++ apply or_intror with (A:= In x0 l1) in H7.
-                    apply Inor in H7. apply H7.
-        + inversion H1.
-          ++ rewrite H3. rewrite alc. unfold lt. apply le_n.
-          ++ unfold lt. rewrite H3 in H5. rewrite alc in H5.
-             apply leSS in H5. apply H5. }
+   intros X l1. induction l1 as [|x l1' IHl1'].
+   - simpl. intros. inversion H1.
+   - intros l2 H_excluded H1 H2. unfold excluded_middle in *.
+     assert (H' := H_excluded (In x l1')).
+     destruct H'.
+     + apply rp_base. assumption.
+     + apply rp_next. destruct (in_split X x l2).
+       * apply H1. simpl. left. reflexivity.
+       * inversion H0. apply IHl1' with (l2 := x0++x1).
+         ++ assumption.
+         ++ intros. destruct (H_excluded (x = x2)) eqn:Heqxx2.
+            +++ subst. apply H in H4. contradiction.
+            +++ apply in_case_diff with (x := x). subst. apply H1.
+                simpl. right. assumption. assumption.
+         ++ subst. rewrite len_plus in H2. simpl in H2. rewrite <- plus_n_Sm in H2.
+            rewrite len_plus. apply lt_S. assumption.
 Qed.
-
-  intros X l1 l2 E H1 H2. unfold excluded_middle in E. generalize dependent l1. induction l2 as [| x2' l2' IHl2'].
-  - intros. induction l1 as [| x1' l1' IHl1'].
-    + inversion H2.
-    + simpl in H1. destruct H1 with x1'. left. reflexivity.
-  - intros. induction l1 as [| x1' l1' IHl1'].
-    + inversion H2.
-    + apply IHl2'.
-      { intros. apply H1 in H. simpl in H. destruct H as [Heq | Hin].
-        -
-      
-      
-    
-  (* intros X l1 l2 E H1 H2. generalize dependent l2. induction l1 as [| x1' l1' IHl1']. *)
-  (* - intros. inversion H2.     *)
-  (* - intros. induction l2 as [| x2' l2' IHl2']. *)
-  (*   + simpl in H1. destruct H1 with x1'. left. reflexivity. *)
-  (*   + apply IHl2'. intros x H. *)
-  (*     { apply H1 in H. simpl in H. destruct H as [Heq | Hin]. *)
-          
-Qed. 
-
-
 

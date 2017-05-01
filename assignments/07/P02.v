@@ -101,9 +101,9 @@ Theorem t_update_permute : forall (X:Type) v1 v2 x1 x2
     (t_update (t_update m x2 v2) x1 v1)
   = (t_update (t_update m x1 v1) x2 v2).
 Proof.
-  intros X v1 v2 x1 x2 m Hneq. apply functional_extensionality.
-  intros x. unfold t_update. destruct (beq_id x1 x) eqn: H1.
-  - apply beq_id_true_iff in H1. rewrite <- H1. rewrite <- beq_id_false_iff in Hneq.
-    rewrite Hneq. reflexivity.
+  intros. unfold t_update. apply functional_extensionality.
+  intros x. destruct (beq_id x1 x) eqn: H1.
+  - apply beq_id_true_iff in H1. rewrite <- H1. rewrite <- beq_id_false_iff in H.
+    rewrite H. reflexivity.
   - reflexivity.
 Qed.

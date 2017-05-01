@@ -22,28 +22,14 @@ Lemma beq_list_true_iff :
     (forall a1 a2, beq a1 a2 = true <-> a1 = a2) ->
     forall l1 l2, beq_list beq l1 l2 = true <-> l1 = l2.
 Proof.
-  intros A beq H l1 l2. split.
-  - (* -> *) generalize dependent l2. generalize dependent l1. intros l1. induction l1 as [| h1 l1' IHl1'].
-    + induction l2 as [| h2 l2' IHl2'].
-      { reflexivity. }
-      { simpl. intros H1. inversion H1. }
-    + induction l2 as [| h2 l2' IHl2'].
-      { simpl. intros H1. inversion H1. }
-      { simpl. intros H1. destruct (beq h1 h2) eqn:Heq.
-        + apply H in Heq. rewrite <- Heq.
-          assert (l1' = l2' -> h1 :: l1' = h1 :: l2') as H2.
-          { intros H3. rewrite H3. reflexivity. } apply H2. apply IHl1'. apply H1.
-        + inversion H1. }
-  - (* <- *) generalize dependent l2. generalize dependent l1. intros l1. induction l1 as [| h1 l1' IHl1'].
-    + induction l2 as [| h2 l2' IHl2'].
-      { simpl. reflexivity. }
-      { simpl. intros H1. inversion H1. }
-    + induction l2 as [| h2 l2' IHl2'].
-      { simpl. intros H1. inversion H1. }
-      { simpl. intros H1. destruct (beq h1 h2) eqn:Heq.
-        + apply IHl1'. apply H in Heq. rewrite Heq in H1.
-          assert (h1 :: l1' = h1 :: l2' -> l1' = l2') as H2.
-          { intros H3. inversion H1. reflexivity. } apply H2. rewrite Heq. apply H1.
-        + inversion H1. apply H in H2. rewrite H2 in Heq. symmetry. apply Heq. }
+  intros A beq H l1 l2. generalize dependent l2.
+  induction l1 as [| h1 l1' IHl1']; induction l2 as [| h2 l2' IHl2'].
+  - simpl. split; auto.
+  - simpl. split; intros Hcontra; inversion Hcontra.
+  - simpl. split; intros Hcontra; inversion Hcontra.
+  - simpl. split; intros; destruct (beq h1 h2) eqn: Hbeq.
+    + apply H in Hbeq. apply IHl1' in H0. subst. reflexivity.
+    + inversion H0. 
+    + apply H in Hbeq. apply IHl1'. subst. inversion H0. reflexivity.
+    + inversion H0. subst. rewrite <- Hbeq. apply H. reflexivity.
 Qed.
-

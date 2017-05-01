@@ -6,8 +6,9 @@ Require Export P04.
 Theorem ev_sum : forall n m, ev n -> ev m -> ev (n + m).
 Proof.
   intros n m Hn Hm.
-  induction Hn. assumption.
-  simpl. constructor. apply IHHn.
+  induction Hn.
+  - simpl. assumption.
+  - simpl. constructor. assumption.
 Qed.
 
 
